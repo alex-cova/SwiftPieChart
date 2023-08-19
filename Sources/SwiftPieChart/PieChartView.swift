@@ -15,6 +15,8 @@ public struct PieChartView: View {
     
     public var colors: [Color]
     public var backgroundColor: Color
+    public var textColor : Color
+    public var secondaryTextColor : Color
     
     public var widthFraction: CGFloat
     public var innerRadiusFraction: CGFloat
@@ -34,7 +36,8 @@ public struct PieChartView: View {
         return tempSlices
     }
     
-    public init(values:[Double], names: [String], formatter: @escaping (Double) -> String, colors: [Color] = [Color.blue, Color.green, Color.orange], backgroundColor: Color = Color(red: 21 / 255, green: 24 / 255, blue: 30 / 255, opacity: 1.0), widthFraction: CGFloat = 0.75, innerRadiusFraction: CGFloat = 0.60){
+    public init(values:[Double], names: [String], formatter: @escaping (Double) -> String, colors: [Color] = [Color.blue, Color.green, Color.orange], backgroundColor: Color = Color(red: 21 / 255, green: 24 / 255, blue: 30 / 255, opacity: 1.0), widthFraction: CGFloat = 0.75, innerRadiusFraction: CGFloat = 0.60,
+                textColor : Color = .white, secondaryTextColor : Color = .gray){
         self.values = values
         self.names = names
         self.formatter = formatter
@@ -43,7 +46,10 @@ public struct PieChartView: View {
         self.backgroundColor = backgroundColor
         self.widthFraction = widthFraction
         self.innerRadiusFraction = innerRadiusFraction
+        self.textColor = textColor
+        self.secondaryTextColor = secondaryTextColor
     }
+    
     
     public var body: some View {
         GeometryReader { geometry in
@@ -88,7 +94,7 @@ public struct PieChartView: View {
                     VStack {
                         Text(self.activeIndex == -1 ? "Total" : names[self.activeIndex])
                             .font(.title)
-                            .foregroundColor(Color.gray)
+                            .foregroundColor(secondaryTextColor)
                         Text(self.formatter(self.activeIndex == -1 ? values.reduce(0, +) : values[self.activeIndex]))
                             .font(.title)
                     }
@@ -96,14 +102,18 @@ public struct PieChartView: View {
                 }
                 PieChartRows(colors: self.colors, names: self.names, values: self.values.map { self.formatter($0) }, percents: self.values.map { String(format: "%.0f%%", $0 * 100 / self.values.reduce(0, +)) })
             }
-            .background(self.backgroundColor)
-            .foregroundColor(Color.white)
+            .background(backgroundColor)
+            .foregroundColor(textColor)
         }
     }
 }
 
+
+
 @available(OSX 10.15, *)
 struct PieChartRows: View {
+    
+    
     var colors: [Color]
     var names: [String]
     var values: [String]
@@ -133,6 +143,7 @@ struct PieChartRows: View {
 struct PieChartView_Previews: PreviewProvider {
     static var previews: some View {
         PieChartView(values: [1300, 500, 300], names: ["Rent", "Transport", "Education"], formatter: {value in String(format: "$%.2f", value)})
+            
     }
 }
 
